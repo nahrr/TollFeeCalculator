@@ -1,6 +1,7 @@
 ﻿using TollFeeCalculatorApp;
 using TollFeeCalculatorApp.Abstractions;
 using TollFeeCalculatorApp.Models;
+using TollFeeCalculatorApp.Rules;
 using TollFeeCalculatorApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,3 +1,5 @@
+using TollFeeCalculatorApp.Rules;
+
 namespace TollFeeCalculatorApp.Tests;
 
 public class TollFreeDateProviderTests

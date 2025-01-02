@@ -1,6 +1,6 @@
 using TollFeeCalculatorApp.Abstractions;
 
-namespace TollFeeCalculatorApp;
+namespace TollFeeCalculatorApp.Rules;
 
 public sealed class TollFreeDateProvider : ITollFreeDateProvider
 {
