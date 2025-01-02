@@ -2,8 +2,14 @@
 
 namespace TollFeeCalculatorApp.Services;
 
-public class TollCalculator
+public sealed class TollCalculator(ITollFeeRules tollFeeRules)
 {
+    private readonly ITollFeeRules
+        _tollFeeRules = tollFeeRules ?? throw new ArgumentNullException(nameof(tollFeeRules));
+
+    private const int MaxDailyFee = 60;
+    private const int TollFree = 0;
+
     /**
  * Calculate the total toll fee for one day
  *
@@ -13,96 +19,44 @@ public class TollCalculator
  */
     public int GetTollFee(IVehicle vehicle, DateTime[] dates)
     {
-        var intervalStart = dates[0];
-        var totalFee = 0;
-        foreach (var date in dates)
+        if (_tollFeeRules.IsTollFreeVehicle(vehicle))
         {
-            var nextFee = GetTollFee(date, vehicle);
-            var tempFee = GetTollFee(intervalStart, vehicle);
+            return TollFree;
+        }
 
-            long diffInMillies = date.Millisecond - intervalStart.Millisecond;
-            var minutes = diffInMillies / 1000 / 60;
+        var totalFee = 0;
+        var intervalStart = dates.FirstOrDefault();
+        var maxFeeInWindow = 0;
 
-            if (minutes <= 60)
+        foreach (var date in dates.OrderBy(d => d))
+        {
+            if (_tollFeeRules.IsTollFreeDate(date))
             {
-                if (totalFee > 0) totalFee -= tempFee;
-                if (nextFee >= tempFee) tempFee = nextFee;
-                totalFee += tempFee;
+                continue;
+            }
+
+            var currentFee = _tollFeeRules.GetFeeForTime(date);
+            var minutesDifference = (date - intervalStart).TotalMinutes;
+
+            if (minutesDifference <= 60)
+            {
+                maxFeeInWindow = Math.Max(maxFeeInWindow, currentFee);
             }
             else
             {
-                totalFee += nextFee;
+                totalFee += maxFeeInWindow;
+                maxFeeInWindow = currentFee;
+                intervalStart = date;
             }
-        }
 
-        if (totalFee > 60) totalFee = 60;
-        return totalFee;
-    }
-
-    private bool IsTollFreeVehicle(IVehicle vehicle)
-    {
-        if (vehicle == null) return false;
-        string vehicleType = vehicle.GetVehicleType();
-        return vehicleType.Equals(TollFreeVehicles.Motorbike.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Tractor.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Emergency.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Diplomat.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Foreign.ToString()) ||
-               vehicleType.Equals(TollFreeVehicles.Military.ToString());
-    }
-
-    public int GetTollFee(DateTime date, IVehicle vehicle)
-    {
-        if (IsTollFreeDate(date) || IsTollFreeVehicle(vehicle)) return 0;
-
-        var hour = date.Hour;
-        var minute = date.Minute;
-
-        if (hour == 6 && minute >= 0 && minute <= 29) return 8;
-        else if (hour == 6 && minute >= 30 && minute <= 59) return 13;
-        else if (hour == 7 && minute >= 0 && minute <= 59) return 18;
-        else if (hour == 8 && minute >= 0 && minute <= 29) return 13;
-        else if (hour >= 8 && hour <= 14 && minute >= 30 && minute <= 59) return 8;
-        else if (hour == 15 && minute >= 0 && minute <= 29) return 13;
-        else if (hour == 15 && minute >= 0 || hour == 16 && minute <= 59) return 18;
-        else if (hour == 17 && minute >= 0 && minute <= 59) return 13;
-        else if (hour == 18 && minute >= 0 && minute <= 29) return 8;
-        else return 0;
-    }
-
-    private bool IsTollFreeDate(DateTime date)
-    {
-        var year = date.Year;
-        var month = date.Month;
-        var day = date.Day;
-
-        if (date.DayOfWeek == DayOfWeek.Saturday || date.DayOfWeek == DayOfWeek.Sunday) return true;
-
-        if (year == 2013)
-        {
-            if (month == 1 && day == 1 ||
-                month == 3 && (day == 28 || day == 29) ||
-                month == 4 && (day == 1 || day == 30) ||
-                month == 5 && (day == 1 || day == 8 || day == 9) ||
-                month == 6 && (day == 5 || day == 6 || day == 21) ||
-                month == 7 ||
-                month == 11 && day == 1 ||
-                month == 12 && (day == 24 || day == 25 || day == 26 || day == 31))
+            if (totalFee >= MaxDailyFee)
             {
-                return true;
+                return MaxDailyFee;
             }
         }
 
-        return false;
-    }
+        totalFee += maxFeeInWindow;
 
-    private enum TollFreeVehicles
-    {
-        Motorbike = 0,
-        Tractor = 1,
-        Emergency = 2,
-        Diplomat = 3,
-        Foreign = 4,
-        Military = 5
+        return Math.Min(totalFee, MaxDailyFee);
     }
 }
