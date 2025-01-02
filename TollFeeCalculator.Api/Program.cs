@@ -1,6 +1,5 @@
-﻿using TollFeeCalculatorApp.Api.Mappers;
+﻿using TollFeeCalculatorApp.Api.Endpoints;
 using TollFeeCalculatorApp.Api.Middlewares;
-using TollFeeCalculatorApp.Api.Responses;
 using TollFeeCalculatorApp.Core.Abstractions;
 using TollFeeCalculatorApp.Core.Models;
 using TollFeeCalculatorApp.Core.Rules;
@@ -16,35 +15,24 @@ builder.Services.AddSingleton<ITollFeeRules, TollFeeRules>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
+app.AddTollFeeEndpoints();
+app.UseHttpsRedirection();
 
-app.MapGet("/toll-fee", (HttpContext context, TollCalculator tollCalculator) =>
+if (app.Environment.IsDevelopment())
 {
-    var query = context.Request.Query;
-
-    var vehicleType = query["VehicleType"].FirstOrDefault();
-    if (string.IsNullOrWhiteSpace(vehicleType))
+    app.UseSwagger();
+    app.UseSwaggerUI(options => 
     {
-        return Results.BadRequest("VehicleType is required.");
-    }
-    
-    var vehicle = VehicleMapper.Map(vehicleType);
-
-    var passes = query["Passes"]
-        .Where(p => DateTime.TryParse(p, out _)).Select(x => DateTime.Parse(x ?? string.Empty)).ToArray();
-
-    if (passes.Length == 0)
-    {
-        return Results.BadRequest("At least one valid Pass is required.");
-    }
-
-    var totalFee = tollCalculator.GetTollFee(vehicle, passes);
-
-    return Results.Ok(new GetTollFeeResponse(totalFee));
-});
-
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+        options.RoutePrefix = string.Empty;
+    });
+}
 
 app.Run();
 

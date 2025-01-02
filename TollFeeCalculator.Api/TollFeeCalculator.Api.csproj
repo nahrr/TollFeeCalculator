@@ -13,4 +13,8 @@
     <ProjectReference Include="..\TollFeeCalculator.Core\TollFeeCalculator.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
+  </ItemGroup>
+
 </Project>
