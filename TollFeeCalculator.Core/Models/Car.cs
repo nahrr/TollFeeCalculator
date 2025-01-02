@@ -2,10 +2,8 @@
 
 namespace TollFeeCalculatorApp.Core.Models;
 
-public class Car : IVehicle
+public sealed class Car : IVehicle
 {
-    public string GetVehicleType()
-    {
-        return "Car";
-    }
+    public VehicleType GetVehicleType() =>
+        VehicleType.Car;
 }

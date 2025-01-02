@@ -1,7 +1,8 @@
-﻿namespace TollFeeCalculatorApp.Core.Abstractions
+﻿using TollFeeCalculatorApp.Core.Models;
+
+namespace TollFeeCalculatorApp.Core.Abstractions;
+
+public interface IVehicle
 {
-    public interface IVehicle
-    {
-        string GetVehicleType();
-    }
+    VehicleType  GetVehicleType();
 }

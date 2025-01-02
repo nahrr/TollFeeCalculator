@@ -1,12 +1,8 @@
 ﻿using TollFeeCalculatorApp.Core.Abstractions;
 
-namespace TollFeeCalculatorApp.Core.Models
+namespace TollFeeCalculatorApp.Core.Models;
+
+public sealed class Motorbike : IVehicle
 {
-    public class Motorbike : IVehicle
-    {
-        public string GetVehicleType()
-        {
-            return "Motorbike";
-        }
-    }
+    public VehicleType GetVehicleType() => VehicleType.Motorbike;
 }

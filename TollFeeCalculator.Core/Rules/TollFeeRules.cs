@@ -1,4 +1,5 @@
 using TollFeeCalculatorApp.Core.Abstractions;
+using TollFeeCalculatorApp.Core.Models;
 
 namespace TollFeeCalculatorApp.Core.Rules;
 
@@ -6,16 +7,6 @@ public sealed class TollFeeRules(ITollFreeDateProvider dateProvider) : ITollFeeR
 {
     private readonly ITollFreeDateProvider _dateProvider =
         dateProvider ?? throw new ArgumentNullException(nameof(dateProvider));
-
-    private enum TollFreeVehicleType
-    {
-        Motorbike,
-        Tractor,
-        Emergency,
-        Diplomat,
-        Foreign,
-        Military
-    }
 
     private static readonly List<FeeScheduleEntry> FeeSchedule =
     [
@@ -30,20 +21,19 @@ public sealed class TollFeeRules(ITollFreeDateProvider dateProvider) : ITollFeeR
         new FeeScheduleEntry(18, 0, 18, 29, 8)
     ];
 
-    private static readonly HashSet<TollFreeVehicleType> TollFreeVehicles =
+    private static readonly HashSet<VehicleType> TollFreeVehicles =
     [
-        TollFreeVehicleType.Motorbike,
-        TollFreeVehicleType.Tractor,
-        TollFreeVehicleType.Emergency,
-        TollFreeVehicleType.Diplomat,
-        TollFreeVehicleType.Foreign,
-        TollFreeVehicleType.Military
+        VehicleType.Motorbike,
+        VehicleType.Tractor,
+        VehicleType.Emergency,
+        VehicleType.Diplomat,
+        VehicleType.Foreign,
+        VehicleType.Military
     ];
 
-
     public bool IsTollFreeVehicle(IVehicle? vehicle) =>
-        vehicle is not null && Enum.TryParse(vehicle.GetVehicleType(), out TollFreeVehicleType type) &&
-        TollFreeVehicles.Contains(type);
+        vehicle is not null &&
+        TollFreeVehicles.Contains(vehicle.GetVehicleType());
 
 
     public bool IsTollFreeDate(DateTime date) => _dateProvider.IsTollFreeDate(date);

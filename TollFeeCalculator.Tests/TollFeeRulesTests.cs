@@ -1,5 +1,6 @@
 using Moq;
 using TollFeeCalculatorApp.Core.Abstractions;
+using TollFeeCalculatorApp.Core.Models;
 using TollFeeCalculatorApp.Core.Rules;
 
 namespace TollFeeCalculatorApp.Tests;
@@ -16,15 +17,14 @@ public class TollFeeRulesTests
     }
 
     [Theory]
-    [InlineData("Motorbike", true)]
-    [InlineData("Tractor", true)]
-    [InlineData("Emergency", true)]
-    [InlineData("Diplomat", true)]
-    [InlineData("Foreign", true)]
-    [InlineData("Military", true)]
-    [InlineData("Car", false)]
-    [InlineData("Bus", false)]
-    public void IsTollFreeVehicle_Should_Return_Correct_Result(string vehicleType, bool expected)
+    [InlineData(VehicleType.Motorbike, true)]
+    [InlineData(VehicleType.Tractor, true)]
+    [InlineData(VehicleType.Emergency, true)]
+    [InlineData(VehicleType.Diplomat, true)]
+    [InlineData(VehicleType.Foreign, true)]
+    [InlineData(VehicleType.Military, true)]
+    [InlineData(VehicleType.Car, false)]
+    public void IsTollFreeVehicle_Should_Return_Correct_Result(VehicleType vehicleType, bool expected)
     {
         var vehicle = new MockVehicle(vehicleType);
 
@@ -69,9 +69,12 @@ public class TollFeeRulesTests
 
         Assert.Equal(0, result);
     }
+}
 
-    private class MockVehicle(string vehicleType) : IVehicle
+public class MockVehicle(VehicleType type) : IVehicle
+{
+    public VehicleType GetVehicleType()
     {
-        public string GetVehicleType() => vehicleType;
+        return type;
     }
 }
