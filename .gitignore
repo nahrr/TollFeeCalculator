@@ -1,0 +1,89 @@
+# Ignore build output directories
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Ignore Visual Studio working directory
+.vs/
+
+# Ignore Rider files
+.idea/
+*.iml
+
+# Ignore logs and crash reports
+*.log
+*.tlog
+
+# Ignore application config files
+appsettings.*.json
+
+# Ignore MacOS generated files
+.DS_Store
+
+# Ignore Windows thumbnail cache
+Thumbs.db
+
+# Ignore runtime files
+*.db
+*.lock
+*.pid
+*.seed
+*.bak
+*.log
+
+# Ignore temporary files and folders
+*.temp
+*.tmp
+*.swp
+*.swo
+~$*
+
+# Ignore npm and node_modules (if frontend code is involved)
+node_modules/
+
+# Ignore test result directories
+TestResults/
+
+# Ignore NuGet packages
+*.nupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+
+# Ignore coverage tools output
+coverage/
+*.coverage
+*.coveragexml
+*.opencover.xml
+lcov-report/
+
+# Ignore JetBrains Rider and ReSharper files
+.idea/
+*.dotSettings.user
+_ReSharper*/
+*/_ReSharper.*
+
+# Ignore byebug command history file
+.byebug_history
+
+# Ignore tooling files
+*.vsix
+.vscode/
+.vscode-test/
+
+# Ignore Azure specific files
+.localhistory/
+.vscodesettings
+
+# Ignore compiled DLLs and EXEs
+*.dll
+*.exe
+*.pdb
+
+# Ignore IDE specific files (optional if team uses same IDE)
+*.ide
