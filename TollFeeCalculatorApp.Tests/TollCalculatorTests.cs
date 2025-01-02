@@ -1,18 +1,32 @@
+using Moq;
+using TollFeeCalculatorApp.Abstractions;
 using TollFeeCalculatorApp.Models;
 using TollFeeCalculatorApp.Services;
 
 namespace TollFeeCalculatorApp.Tests;
 
+using Xunit;
+
 public class TollCalculatorTests
 {
+    private readonly Mock<ITollFeeRules> _mockTollFeeRules;
+    private readonly TollCalculator _tollCalculator;
+
+    public TollCalculatorTests()
+    {
+        _mockTollFeeRules = new Mock<ITollFeeRules>();
+        _tollCalculator = new TollCalculator(_mockTollFeeRules.Object);
+    }
+
     [Fact]
     public void Should_Return_Zero_For_TollFreeVehicle()
     {
-        var tollCalculator = new TollCalculator();
-        var motorbike = new Motorbike();
-        DateTime[] dates = [new DateTime(2023, 10, 1, 6, 0, 0)];
+        _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(true);
 
-        var result = tollCalculator.GetTollFee(motorbike, dates);
+        var motorbike = new Motorbike();
+        DateTime[] dates = [new DateTime(2025, 01, 2, 6, 0, 0)];
+
+        var result = _tollCalculator.GetTollFee(motorbike, dates);
 
         Assert.Equal(0, result);
     }
@@ -20,11 +34,11 @@ public class TollCalculatorTests
     [Fact]
     public void Should_Return_Zero_For_TollFreeDate()
     {
-        var tollCalculator = new TollCalculator();
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(true);
         var car = new Car();
-        DateTime[] dates = [new DateTime(2023, 7, 1, 6, 0, 0)];
+        DateTime[] dates = [new DateTime(2025, 7, 1, 6, 0, 0)];
 
-        var result = tollCalculator.GetTollFee(car, dates);
+        var result = _tollCalculator.GetTollFee(car, dates);
 
         Assert.Equal(0, result);
     }
@@ -32,11 +46,14 @@ public class TollCalculatorTests
     [Fact]
     public void Should_Calculate_Fee_For_SinglePass()
     {
-        var tollCalculator = new TollCalculator();
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.GetFeeForTime(It.IsAny<DateTime>())).Returns(8);
+
         var car = new Car();
         DateTime[] dates = [new DateTime(2025, 01, 20, 6, 0, 0)];
 
-        var result = tollCalculator.GetTollFee(car, dates);
+        var result = _tollCalculator.GetTollFee(car, dates);
 
         Assert.Equal(8, result);
     }
@@ -44,15 +61,14 @@ public class TollCalculatorTests
     [Fact]
     public void Should_Cap_Fee_At_MaxDailyLimit()
     {
-        var tollCalculator = new TollCalculator();
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.GetFeeForTime(It.IsAny<DateTime>())).Returns(15);
+
         var car = new Car();
-        var passes = GeneratePasses(
-            new DateTime(2025, 1, 20), // Base date (Monday)
-            6,
-            18,
-            15
-        );
-        var result = tollCalculator.GetTollFee(car, passes);
+        var passes = GeneratePasses(new DateTime(2025, 1, 20), 6, 18, 15);
+
+        var result = _tollCalculator.GetTollFee(car, passes);
 
         Assert.Equal(60, result);
     }
@@ -76,31 +92,75 @@ public class TollCalculatorTests
     [InlineData(2013, 12, 31)]
     public void Should_Return_Zero_For_TollFreeDates_2013(int year, int month, int day)
     {
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(true);
+
+
         var date = new DateTime(year, month, day);
-        var tollCalculator = new TollCalculator();
         var car = new Car();
-        var result = tollCalculator.GetTollFee(car, [date]);
+        var result = _tollCalculator.GetTollFee(car, [date]);
+
         Assert.Equal(0, result);
     }
 
     [Theory]
     [InlineData(2013, 1, 2, 6, 30, 13)] // Not a holiday, 06:30 -> 13 kr
     [InlineData(2013, 11, 11, 8, 0, 13)] // Regular date, 08:00 -> 13 kr
-    public void Should_Calculate_Fee_For_NonTollFreeDates(int year, int month, int day, int hour, int minute,
+    public void Should_Calculate_Fee_For_NonTollFreeDates(
+        int year,
+        int month,
+        int day,
+        int hour,
+        int minute,
         int expectedFee)
     {
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.GetFeeForTime(It.IsAny<DateTime>())).Returns(expectedFee);
+
+
         var date = new DateTime(year, month, day, hour, minute, 0);
-        var tollCalculator = new TollCalculator();
         var car = new Car();
 
-        var result = tollCalculator.GetTollFee(car, [date]);
+        var result = _tollCalculator.GetTollFee(car, [date]);
 
         Assert.Equal(expectedFee, result);
     }
 
+    [Fact]
+    public void Should_Handle_Empty_Pass_List()
+    {
+        var car = new Car();
+        DateTime[] dates = [];
+
+        var result = _tollCalculator.GetTollFee(car, dates);
+
+        Assert.Equal(0, result);
+    }
+
+    [Fact]
+    public void Should_Use_Highest_Fee_In_60_Minute_Window()
+    {
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(false);
+        _mockTollFeeRules
+            .Setup(r => r.GetFeeForTime(It.IsAny<DateTime>()))
+            .Returns<DateTime>(d => d.Minute == 0 ? 8 : 13); // Return higher fee for a specific time
+
+        var car = new Car();
+        DateTime[] dates =
+        [
+            new DateTime(2025, 1, 20, 6, 0, 0), // 8 kr
+            new DateTime(2025, 1, 20, 6, 45, 0) // 13 kr, within the same 60-minute window
+        ];
+
+        var result = _tollCalculator.GetTollFee(car, dates);
+
+        Assert.Equal(13, result);
+    }
+
     private static DateTime[] GeneratePasses(DateTime baseDate, int startHour, int endHour, int intervalMinutes)
     {
-        List<DateTime> passes = [];
+        var passes = new List<DateTime>();
         for (var hour = startHour; hour <= endHour; hour++)
         {
             for (var minute = 0; minute < 60; minute += intervalMinutes)
