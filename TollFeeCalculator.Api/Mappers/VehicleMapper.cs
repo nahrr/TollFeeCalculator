@@ -1,7 +1,7 @@
-using TollFeeCalculatorApp.Abstractions;
-using TollFeeCalculatorApp.Models;
+using TollFeeCalculatorApp.Core.Abstractions;
+using TollFeeCalculatorApp.Core.Models;
 
-namespace TollFeeCalculatorApp.Mappers;
+namespace TollFeeCalculatorApp.Api.Mappers;
 
 public static class VehicleMapper
 {

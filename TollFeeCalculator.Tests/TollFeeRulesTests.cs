@@ -1,6 +1,6 @@
 using Moq;
-using TollFeeCalculatorApp.Abstractions;
-using TollFeeCalculatorApp.Rules;
+using TollFeeCalculatorApp.Core.Abstractions;
+using TollFeeCalculatorApp.Core.Rules;
 
 namespace TollFeeCalculatorApp.Tests;
 

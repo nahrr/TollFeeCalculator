@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TollFeeCalculatorApp.Middlewares;
+namespace TollFeeCalculatorApp.Api.Middlewares;
 
 internal sealed class GlobalExceptionHandler(
     ILogger<GlobalExceptionHandler> logger,

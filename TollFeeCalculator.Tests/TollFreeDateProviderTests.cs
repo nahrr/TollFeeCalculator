@@ -1,4 +1,4 @@
-using TollFeeCalculatorApp.Rules;
+using TollFeeCalculatorApp.Core.Rules;
 
 namespace TollFeeCalculatorApp.Tests;
 

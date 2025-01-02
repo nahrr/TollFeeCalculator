@@ -1,6 +1,6 @@
-﻿using TollFeeCalculatorApp.Abstractions;
+﻿using TollFeeCalculatorApp.Core.Abstractions;
 
-namespace TollFeeCalculatorApp.Models;
+namespace TollFeeCalculatorApp.Core.Models;
 
 public class Car : IVehicle
 {

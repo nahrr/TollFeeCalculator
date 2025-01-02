@@ -1,9 +1,10 @@
-﻿using TollFeeCalculatorApp.Abstractions;
-using TollFeeCalculatorApp.Mappers;
-using TollFeeCalculatorApp.Middlewares;
-using TollFeeCalculatorApp.Models;
-using TollFeeCalculatorApp.Rules;
-using TollFeeCalculatorApp.Services;
+﻿using TollFeeCalculatorApp.Api.Mappers;
+using TollFeeCalculatorApp.Api.Middlewares;
+using TollFeeCalculatorApp.Api.Responses;
+using TollFeeCalculatorApp.Core.Abstractions;
+using TollFeeCalculatorApp.Core.Models;
+using TollFeeCalculatorApp.Core.Rules;
+using TollFeeCalculatorApp.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,6 @@ builder.Services.AddSingleton<ITollFreeDateProvider, TollFreeDateProvider>();
 builder.Services.AddSingleton<ITollFeeRules, TollFeeRules>();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-
 
 var app = builder.Build();
 
@@ -42,11 +42,11 @@ app.MapGet("/toll-fee", (HttpContext context, TollCalculator tollCalculator) =>
 
     var totalFee = tollCalculator.GetTollFee(vehicle, passes);
 
-    return Results.Ok(new CalculateTollFeeResponse(totalFee));
+    return Results.Ok(new GetTollFeeResponse(totalFee));
 });
 
 
 app.Run();
 
-public sealed record CalculateTollFeeResponse(int TotalFee);
+
 

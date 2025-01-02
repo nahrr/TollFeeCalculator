@@ -1,4 +1,4 @@
-﻿namespace TollFeeCalculatorApp.Abstractions
+﻿namespace TollFeeCalculatorApp.Core.Abstractions
 {
     public interface IVehicle
     {

@@ -1,6 +1,6 @@
-﻿using TollFeeCalculatorApp.Abstractions;
+﻿using TollFeeCalculatorApp.Core.Abstractions;
 
-namespace TollFeeCalculatorApp.Services;
+namespace TollFeeCalculatorApp.Core.Services;
 
 public sealed class TollCalculator(ITollFeeRules tollFeeRules)
 {
