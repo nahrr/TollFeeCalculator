@@ -4,3 +4,4 @@ public interface ITollFreeDateProvider
 {
     bool IsTollFreeDate(DateTime date);
 }
+
