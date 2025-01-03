@@ -16,7 +16,7 @@ public sealed class TollCalculator(ITollFeeRules tollFeeRules)
     /// <param name="vehicle">The vehicle.</param>
     /// <param name="dates">Date and time of all passes on one day.</param>
     /// <returns>The total toll fee for that day.</returns>
-    public int GetTollFee(IVehicle vehicle, DateTime[] dates)
+    public int GetTollFee(IVehicle vehicle, IEnumerable<DateTime> dates)
     {
         if (_tollFeeRules.IsTollFreeVehicle(vehicle))
         {
@@ -24,10 +24,11 @@ public sealed class TollCalculator(ITollFeeRules tollFeeRules)
         }
 
         var totalFee = 0;
-        var intervalStart = dates.FirstOrDefault();
+        var sortedDates = dates.OrderBy(d => d).ToArray(); 
+        var intervalStart = sortedDates.FirstOrDefault();
         var maxFeeInWindow = 0;
 
-        foreach (var date in dates.OrderBy(d => d))
+        foreach (var date in sortedDates)
         {
             if (_tollFeeRules.IsTollFreeDate(date))
             {
@@ -37,21 +38,16 @@ public sealed class TollCalculator(ITollFeeRules tollFeeRules)
             var currentFee = _tollFeeRules.GetFeeForTime(date);
             var minutesDifference = (date - intervalStart).TotalMinutes;
 
-            if (minutesDifference <= 60)
+            if (minutesDifference > 60)
             {
-                // Accumulate the maximum fee within the 60-minute window
-                maxFeeInWindow = Math.Max(maxFeeInWindow, currentFee);
-            }
-            else
-            {
-                // Once out of the 60-minute window, add the max fee and reset for the next window
                 totalFee += maxFeeInWindow;
-                maxFeeInWindow = currentFee; // Start a new fee window
+                maxFeeInWindow = 0;
                 intervalStart = date;
             }
+
+            maxFeeInWindow = Math.Max(maxFeeInWindow, currentFee);
         }
 
-        // Adding the last computed maximum fee after the loop
         totalFee += maxFeeInWindow;
 
         return Math.Min(totalFee, MaxDailyFee);

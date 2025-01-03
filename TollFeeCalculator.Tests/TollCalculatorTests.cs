@@ -97,7 +97,7 @@ public class TollCalculatorTests
 
         var date = new DateTime(year, month, day);
         var car = new Car();
-        var result = _tollCalculator.GetTollFee(car, [date]);
+        var result = _tollCalculator.GetTollFee(car, (DateTime[]) [date]);
 
         Assert.Equal(0, result);
     }
@@ -121,7 +121,7 @@ public class TollCalculatorTests
         var date = new DateTime(year, month, day, hour, minute, 0);
         var car = new Car();
 
-        var result = _tollCalculator.GetTollFee(car, [date]);
+        var result = _tollCalculator.GetTollFee(car, (DateTime[]) [date]);
 
         Assert.Equal(expectedFee, result);
     }
@@ -158,9 +158,38 @@ public class TollCalculatorTests
         Assert.Equal(13, result);
     }
 
-    private static DateTime[] GeneratePasses(DateTime baseDate, int startHour, int endHour, int intervalMinutes)
+    [Fact]
+    public void Should_Handle_NonChronological_Dates_Correctly()
     {
-        var passes = new List<DateTime>();
+        _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(false);
+        _mockTollFeeRules.Setup(r => r.GetFeeForTime(It.IsAny<DateTime>()))
+            .Returns<DateTime>(d =>
+            {
+                return d.Hour switch
+                {
+                    6 => 8,
+                    7 => 15,
+                    _ => 0
+                };
+            });
+
+        var car = new Car();
+
+        DateTime[] dates =
+        [
+            new DateTime(2025, 1, 20, 7, 30, 0),
+            new DateTime(2025, 1, 20, 6, 15, 0)
+        ];
+
+        var result = _tollCalculator.GetTollFee(car, dates);
+
+        Assert.Equal(23, result);
+    }
+
+    private static List<DateTime> GeneratePasses(DateTime baseDate, int startHour, int endHour, int intervalMinutes)
+    {
+        List<DateTime> passes = [];
         for (var hour = startHour; hour <= endHour; hour++)
         {
             for (var minute = 0; minute < 60; minute += intervalMinutes)
@@ -169,6 +198,6 @@ public class TollCalculatorTests
             }
         }
 
-        return passes.ToArray();
+        return passes;
     }
 }
