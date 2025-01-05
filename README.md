@@ -7,7 +7,6 @@ The Toll Fee Calculator is a backend application built with .NET 8. It calculate
 2. [API Endpoints](#api-endpoints)
 3. [Features](#features)
 4. [Improvements](#improvements)
-5. [What's Missing?](#whats-missing)
 
 ---
 
