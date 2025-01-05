@@ -1,5 +1,5 @@
 using TollFeeCalculatorApp.Core.Abstractions;
-using TollFeeCalculatorApp.Core.Models;
+using TollFeeCalculatorApp.Core.Models.Enums;
 
 namespace TollFeeCalculatorApp.Core.Rules;
 

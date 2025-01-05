@@ -5,8 +5,6 @@ using TollFeeCalculatorApp.Core.Services;
 
 namespace TollFeeCalculatorApp.Tests;
 
-using Xunit;
-
 public class TollCalculatorTests
 {
     private readonly Mock<ITollFeeRules> _mockTollFeeRules;

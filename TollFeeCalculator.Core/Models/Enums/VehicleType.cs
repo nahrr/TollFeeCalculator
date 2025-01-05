@@ -1,4 +1,4 @@
-namespace TollFeeCalculatorApp.Core.Models;
+namespace TollFeeCalculatorApp.Core.Models.Enums;
 
 public enum VehicleType
 {

@@ -1,4 +1,4 @@
-﻿using TollFeeCalculatorApp.Core.Models;
+﻿using TollFeeCalculatorApp.Core.Models.Enums;
 
 namespace TollFeeCalculatorApp.Core.Abstractions;
 
