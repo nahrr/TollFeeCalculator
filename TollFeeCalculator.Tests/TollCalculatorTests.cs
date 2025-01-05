@@ -71,38 +71,21 @@ public class TollCalculatorTests
         Assert.Equal(60, result);
     }
 
-    [Theory]
-    [InlineData(2013, 1, 1)]
-    [InlineData(2013, 3, 28)]
-    [InlineData(2013, 3, 29)]
-    [InlineData(2013, 4, 1)]
-    [InlineData(2013, 4, 30)]
-    [InlineData(2013, 5, 1)]
-    [InlineData(2013, 5, 8)]
-    [InlineData(2013, 6, 5)]
-    [InlineData(2013, 6, 6)]
-    [InlineData(2013, 6, 21)]
-    [InlineData(2013, 7, 1)]
-    [InlineData(2013, 7, 31)]
-    [InlineData(2013, 12, 24)]
-    [InlineData(2013, 12, 25)]
-    [InlineData(2013, 12, 26)]
-    [InlineData(2013, 12, 31)]
-    public async Task Should_Return_Zero_For_TollFreeDates_2013(int year, int month, int day)
+    [Fact]
+    public async Task TollFee_ShouldBeZero_OnTollFreeDates()
     {
         _mockTollFeeRules.Setup(r => r.IsTollFreeDate(It.IsAny<DateTime>())).ReturnsAsync(true);
+        _mockTollFeeRules.Setup(r => r.GetFeeForTime(It.IsAny<DateTime>())).Returns(0);
 
-
-        var date = new DateTime(year, month, day);
         var car = new Car();
-        var result = await _tollCalculator.GetTollFee(car, (DateTime[]) [date]);
+        var result = await _tollCalculator.GetTollFee(car, [new DateTime()]);
 
         Assert.Equal(0, result);
     }
 
     [Theory]
-    [InlineData(2013, 1, 2, 6, 30, 13)] // Not a holiday, 06:30 -> 13 kr
-    [InlineData(2013, 11, 11, 8, 0, 13)] // Regular date, 08:00 -> 13 kr
+    [InlineData(2025, 1, 2, 6, 30, 13)]
+    [InlineData(2025, 11, 11, 8, 0, 13)]
     public async Task Should_Calculate_Fee_For_NonTollFreeDates(
         int year,
         int month,
@@ -115,11 +98,10 @@ public class TollCalculatorTests
         _mockTollFeeRules.Setup(r => r.IsTollFreeVehicle(It.IsAny<IVehicle>())).Returns(false);
         _mockTollFeeRules.Setup(r => r.GetFeeForTime(It.IsAny<DateTime>())).Returns(expectedFee);
 
-
         var date = new DateTime(year, month, day, hour, minute, 0);
         var car = new Car();
 
-        var result = await _tollCalculator.GetTollFee(car, (DateTime[]) [date]);
+        var result = await _tollCalculator.GetTollFee(car, [date]);
 
         Assert.Equal(expectedFee, result);
     }
