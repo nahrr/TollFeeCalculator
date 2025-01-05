@@ -9,8 +9,8 @@ using TollFeeCalculatorApp.Core.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<TollCalculator>();
-builder.Services.AddSingleton<ITollFreeDateProvider, TollFreeDateProvider>();
-builder.Services.AddSingleton<ITollFeeRules, TollFeeRules>();
+builder.Services.AddTransient<ITollFreeDateProvider, TollFreeDateProvider>();
+builder.Services.AddTransient<ITollFeeRules, TollFeeRules>();
 
 builder.Services.AddSingleton<IHolidayApi, MockHolidayApi>();
 builder.Services.AddMemoryCache();
