@@ -27,32 +27,29 @@ public class TollFreeDateProviderTests
         Assert.True(result);
     }
 
-    [Theory]
-    [InlineData(2013, 1, 1)] // New Year's Day
-    [InlineData(2013, 3, 28)] // Specific toll-free holiday
-    [InlineData(2013, 12, 25)] // Christmas Day
-    public async Task Should_Return_True_For_TollFreeHolidays(int year, int month, int day)
+    [Fact]
+    public async Task Should_Return_True_When_Date_Is_A_Holiday()
     {
-        var date = new DateTime(year, month, day);
-        _mockHolidayApi.Setup(api => api.GetHolidaysAsync(It.IsAny<int>()))
-            .ReturnsAsync(new List<DateTime> { date });
+        var holidayDate = new DateTime(2025, 12, 25);
+        _mockHolidayApi.Setup(api => api.GetHolidaysAsync(2025))
+            .ReturnsAsync([holidayDate]);
 
-        var result = await _provider.IsTollFreeDate(date);
+        var result = await _provider.IsTollFreeDate(holidayDate);
 
-        Assert.True(result);
+        Assert.True(result, "The date should be recognized as a toll-free holiday.");
     }
 
-    [Theory]
-    [InlineData(2025, 1, 20)] // Regular weekday
-    [InlineData(2013, 5, 15)] // Non-holiday weekday in 2013
-    public async Task Should_Return_False_For_RegularDays(int year, int month, int day)
+    [Fact]
+    public async Task Should_Return_False_When_Date_Is_Not_A_Holiday()
     {
-        var date = new DateTime(year, month, day);
-        _mockHolidayApi.Setup(api => api.GetHolidaysAsync(It.IsAny<int>()))
-            .ReturnsAsync(new List<DateTime>());  // Empty list for non-holidays
+        var nonHolidayDate = new DateTime(2025, 12, 1);
+        DateTime[] holidays = [new DateTime(2025, 12, 25)];
 
-        var result = await _provider.IsTollFreeDate(date);
+        _mockHolidayApi.Setup(api => api.GetHolidaysAsync(2025))
+            .ReturnsAsync(holidays);
 
-        Assert.False(result);
+        var result = await _provider.IsTollFreeDate(nonHolidayDate);
+
+        Assert.False(result, "The date should not be recognized as a toll-free holiday.");
     }
 }
