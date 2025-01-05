@@ -35,7 +35,7 @@ public sealed class TollFeeRules(ITollFreeDateProvider dateProvider) : ITollFeeR
         vehicle is not null &&
         TollFreeVehicles.Contains(vehicle.GetVehicleType());
 
-    public bool IsTollFreeDate(DateTime date) => _dateProvider.IsTollFreeDate(date);
+    public Task<bool> IsTollFreeDate(DateTime date) => _dateProvider.IsTollFreeDate(date);
 
     public int GetFeeForTime(DateTime date) =>
         FeeSchedule
@@ -44,7 +44,7 @@ public sealed class TollFeeRules(ITollFreeDateProvider dateProvider) : ITollFeeR
             .FirstOrDefault();
 }
 
-public record FeeScheduleEntry(int StartHour, int StartMinute, int EndHour, int EndMinute, int Fee)
+public sealed record FeeScheduleEntry(int StartHour, int StartMinute, int EndHour, int EndMinute, int Fee)
 {
     public bool IsWithinRange(TimeSpan time)
     {

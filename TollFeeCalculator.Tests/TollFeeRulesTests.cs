@@ -34,12 +34,12 @@ public class TollFeeRulesTests
     }
 
     [Fact]
-    public void IsTollFreeDate_Should_Use_DateProvider()
+    public async Task IsTollFreeDate_Should_Use_DateProvider()
     {
         var testDate = new DateTime(2025, 1, 20);
-        _mockDateProvider.Setup(p => p.IsTollFreeDate(testDate)).Returns(true);
+        _mockDateProvider.Setup(p => p.IsTollFreeDate(testDate)).ReturnsAsync(true);
 
-        var result = _tollFeeRules.IsTollFreeDate(testDate);
+        var result = await _tollFeeRules.IsTollFreeDate(testDate);
 
         Assert.True(result);
         _mockDateProvider.Verify(p => p.IsTollFreeDate(testDate), Times.Once);

@@ -7,4 +7,8 @@
     <RootNamespace>TollFeeCalculatorApp.Core</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TollFeeCalculator.Infrastructure\TollFeeCalculator.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -11,9 +11,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TollFeeCalculator.Core\TollFeeCalculator.Core.csproj" />
+    <ProjectReference Include="..\TollFeeCalculator.Infrastructure\TollFeeCalculator.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Scrutor" Version="5.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
   </ItemGroup>
 

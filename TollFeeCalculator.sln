@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollFeeCalculator.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollFeeCalculator.Core", "TollFeeCalculator.Core\TollFeeCalculator.Core.csproj", "{6966DAF8-356D-47CF-B2FA-A1B7CBDA26D9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TollFeeCalculator.Infrastructure", "TollFeeCalculator.Infrastructure\TollFeeCalculator.Infrastructure.csproj", "{84C42404-EBCD-48D1-9178-89F29A65F5FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,5 +30,9 @@ Global
 		{6966DAF8-356D-47CF-B2FA-A1B7CBDA26D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6966DAF8-356D-47CF-B2FA-A1B7CBDA26D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6966DAF8-356D-47CF-B2FA-A1B7CBDA26D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84C42404-EBCD-48D1-9178-89F29A65F5FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84C42404-EBCD-48D1-9178-89F29A65F5FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84C42404-EBCD-48D1-9178-89F29A65F5FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84C42404-EBCD-48D1-9178-89F29A65F5FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

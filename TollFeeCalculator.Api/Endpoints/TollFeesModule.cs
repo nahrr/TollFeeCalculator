@@ -9,7 +9,7 @@ public static class TollFeesModule
 {
     public static void AddTollFeeEndpoints(this IEndpointRouteBuilder app)
     {
-        app.MapGet("/toll-fee", ([AsParameters] GetTollFeeRequest request, TollCalculator tollCalculator) =>
+        app.MapGet("/toll-fee", async ([AsParameters] GetTollFeeRequest request, TollCalculator tollCalculator) =>
             {
                 if (string.IsNullOrWhiteSpace(request.VehicleType))
                 {
@@ -22,7 +22,7 @@ public static class TollFeesModule
                 }
 
                 var vehicle = VehicleMapper.Map(request.VehicleType);
-                var totalFee = tollCalculator.GetTollFee(vehicle, request.TollPassTimes.ToArray());
+                var totalFee = await tollCalculator.GetTollFee(vehicle, request.TollPassTimes.ToArray());
 
                 return Results.Ok(new GetTollFeeResponse(totalFee));
             })

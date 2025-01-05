@@ -16,7 +16,7 @@ public sealed class TollCalculator(ITollFeeRules tollFeeRules)
     /// <param name="vehicle">The vehicle.</param>
     /// <param name="dates">Date and time of all passes on one day.</param>
     /// <returns>The total toll fee for that day.</returns>
-    public int GetTollFee(IVehicle vehicle, IEnumerable<DateTime> dates)
+    public async Task<int> GetTollFee(IVehicle vehicle, IEnumerable<DateTime> dates)
     {
         if (_tollFeeRules.IsTollFreeVehicle(vehicle))
         {
@@ -24,13 +24,13 @@ public sealed class TollCalculator(ITollFeeRules tollFeeRules)
         }
 
         var totalFee = 0;
-        var sortedDates = dates.OrderBy(d => d).ToArray(); 
+        var sortedDates = dates.OrderBy(d => d).ToArray();
         var intervalStart = sortedDates.FirstOrDefault();
         var maxFeeInWindow = 0;
 
         foreach (var date in sortedDates)
         {
-            if (_tollFeeRules.IsTollFreeDate(date))
+            if (await _tollFeeRules.IsTollFreeDate(date))
             {
                 continue;
             }
