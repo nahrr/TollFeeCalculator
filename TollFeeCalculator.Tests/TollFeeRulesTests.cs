@@ -46,11 +46,26 @@ public class TollFeeRulesTests
     }
 
     [Theory]
-    [InlineData(6, 0, 8)] // 6:00 - 6:29 -> 8 kr
-    [InlineData(6, 30, 13)] // 6:30 - 6:59 -> 13 kr
-    [InlineData(7, 0, 18)] // 7:00 - 7:59 -> 18 kr
-    [InlineData(8, 30, 8)] // 8:30 - 14:59 -> 8 kr
-    [InlineData(18, 30, 0)] // 18:30 - 05:59 -> 0 kr
+    [InlineData(6, 0, 8)]
+    [InlineData(6, 29, 8)]
+    [InlineData(6, 30, 13)]
+    [InlineData(7, 59, 18)]
+    [InlineData(8, 0, 13)]
+    [InlineData(8, 29, 13)]
+    [InlineData(8, 30, 8)]
+    [InlineData(14, 59, 8)]
+    [InlineData(15, 0, 13)]
+    [InlineData(15, 29, 13)]
+    [InlineData(15, 30, 18)]
+    [InlineData(16, 59, 18)]
+    [InlineData(17, 0, 13)]
+    [InlineData(17, 59, 13)]
+    [InlineData(18, 0, 8)]
+    [InlineData(18, 29, 8)]
+    [InlineData(18, 30, 0)]
+    [InlineData(23, 59, 0)]
+    [InlineData(0, 0, 0)]
+    [InlineData(5, 59, 0)]
     public void GetFeeForTime_Should_Return_Correct_Fee(int hour, int minute, int expectedFee)
     {
         var date = new DateTime(2025, 1, 20, hour, minute, 0);
