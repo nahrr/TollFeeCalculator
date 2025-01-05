@@ -5,7 +5,7 @@ using TollFeeCalculatorApp.Core.Services;
 
 namespace TollFeeCalculatorApp.Api.Endpoints;
 
-public static class TollFeesModule
+internal static class TollFeesModule
 {
     public static void AddTollFeeEndpoints(this IEndpointRouteBuilder app)
     {

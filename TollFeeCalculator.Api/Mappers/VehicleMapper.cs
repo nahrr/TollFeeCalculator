@@ -4,7 +4,7 @@ using TollFeeCalculatorApp.Core.Models.Enums;
 
 namespace TollFeeCalculatorApp.Api.Mappers;
 
-public static class VehicleMapper
+internal static class VehicleMapper
 {
     private static readonly Dictionary<VehicleType, Func<IVehicle>> VehicleMappings =
         new()
